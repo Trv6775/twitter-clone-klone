@@ -3,10 +3,9 @@ import 'package:appwrite/models.dart' as model;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:twitter_klone_clone/core/core.dart';
-import 'package:twitter_klone_clone/core/providers.dart';
 
-final authProvider=Provider((ref) {
-  final account=ref.watch(appwriteAccountProvider);
+final authAPIProvider = Provider((ref) {
+  final account = ref.watch(appwriteAccountProvider);
   return AuthAPI(account: account);
 });
 
@@ -15,6 +14,13 @@ abstract class IAuthAPI {
     required String email,
     required String password,
   });
+
+  FutureEither<model.Session> login({
+    required String email,
+    required String password,
+  });
+
+  Future<model.User?> currentUserAccount();
 }
 
 class AuthAPI implements IAuthAPI {
@@ -32,10 +38,10 @@ class AuthAPI implements IAuthAPI {
         password: password,
       );
       return right(account);
-    } on AppwriteException catch(e,stackTrace){
+    } on AppwriteException catch (e, stackTrace) {
       return left(
         Failure(
-          e.message??'Some unexpected error occurred',
+          e.message ?? 'Some unexpected error occurred',
           stackTrace,
         ),
       );
@@ -46,6 +52,37 @@ class AuthAPI implements IAuthAPI {
           stackTrace,
         ),
       );
+    }
+  }
+
+  @override
+  FutureEither<model.Session> login(
+      {required String email, required String password}) async {
+    try {
+      final session = await _account.createEmailSession(
+        email: email,
+        password: password,
+      );
+      return right(session);
+    } on AppwriteException catch (e, stackTrace) {
+      return left(
+        Failure(e.message ?? 'Some unexpected error', stackTrace),
+      );
+    } catch (e, stackTrace) {
+      return left(
+        Failure(e.toString(), stackTrace),
+      );
+    }
+  }
+
+  @override
+  Future<model.User?> currentUserAccount() async{
+    try {
+      return await _account.get();
+    } on AppwriteException catch (e) {
+      return null;
+    } catch (e) {
+      return null;
     }
   }
 }
