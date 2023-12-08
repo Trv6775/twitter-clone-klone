@@ -6,6 +6,7 @@ import 'package:twitter_klone_clone/core/core.dart';
 import 'package:twitter_klone_clone/features/auth/view/login_view.dart';
 import 'package:twitter_klone_clone/features/home/views/home_view.dart';
 import 'package:appwrite/models.dart' as model;
+import 'package:twitter_klone_clone/models/user_model.dart';
 
 final authControllerProvider = StateNotifierProvider<AuthController, bool>(
   (ref) {
@@ -41,12 +42,29 @@ class AuthController extends StateNotifier<bool> {
     state = false;
     res.fold(
       (l) => showSnackBar(context, l.message),
-      (r) {
-        showSnackBar(context, 'Account created successfully! Please login.');
-        Navigator.push(
-          context,
-          LoginView.route(),
+      (r) async {
+        UserModel userModel = UserModel(
+          email: email,
+          name: getNameFromEmail(email),
+          followers: const [],
+          following: const [],
+          profilePic: '',
+          bannerPic: '',
+          uid: '',
+          bio: '',
+          isTwitterBlue: false,
         );
+        final res2 = await _userAPI.saveUserData(userModel);
+        res2.fold((l) {
+          return showSnackBar(context,l.message,);
+        }, (r) {
+          showSnackBar(context, 'Account created successfully! Please login.');
+          Navigator.push(
+            context,
+            LoginView.route(),
+          );
+        });
+
       },
     );
   }
