@@ -22,6 +22,19 @@ final currentUserAccountProvider = FutureProvider((ref) {
   final authController = ref.watch(authControllerProvider.notifier);
   return authController.currentUser();
 });
+final currentUserDetailsProvider = FutureProvider((ref) {
+  final currentUserId = ref.watch(currentUserAccountProvider).value!.$id;
+  print(currentUserId);
+  final userDetails = ref.watch(
+    userDetailsProvider(currentUserId),
+  );
+  return userDetails.value;
+});
+
+final userDetailsProvider = FutureProvider.family((ref, String uid) {
+  final authController = ref.watch(authControllerProvider.notifier);
+  return authController.getUserData(uid);
+});
 
 class AuthController extends StateNotifier<bool> {
   final AuthAPI _authAPI;
@@ -50,13 +63,16 @@ class AuthController extends StateNotifier<bool> {
           following: const [],
           profilePic: '',
           bannerPic: '',
-          uid: '',
+          uid: r.$id,
           bio: '',
           isTwitterBlue: false,
         );
         final res2 = await _userAPI.saveUserData(userModel);
         res2.fold((l) {
-          return showSnackBar(context,l.message,);
+          return showSnackBar(
+            context,
+            l.message,
+          );
         }, (r) {
           showSnackBar(context, 'Account created successfully! Please login.');
           Navigator.push(
@@ -64,7 +80,6 @@ class AuthController extends StateNotifier<bool> {
             LoginView.route(),
           );
         });
-
       },
     );
   }
@@ -90,5 +105,11 @@ class AuthController extends StateNotifier<bool> {
 
   Future<model.User?> currentUser() {
     return _authAPI.currentUserAccount();
+  }
+
+  Future<UserModel> getUserData(String uid) async {
+    final document = await _userAPI.getUserData(uid);
+    final updatedUser = UserModel.fromMap(document.data);
+    return updatedUser;
   }
 }
