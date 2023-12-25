@@ -2,16 +2,36 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:twitter_klone_clone/apis/apis..dart';
+
 import 'package:twitter_klone_clone/core/core.dart';
 import 'package:twitter_klone_clone/core/enums/enums.dart';
 import 'package:twitter_klone_clone/features/auth/controller/auth_controller.dart';
 import 'package:twitter_klone_clone/models/tweet_model.dart';
 
-class TweetController extends StateNotifier<bool> {
-  final Ref _ref;
+final tweetControllerProvider =
+    StateNotifierProvider<TweetController, bool>((ref) {
+  final tweetAPI = ref.watch(tweetAPIProvider);
+  final storageAPI = ref.watch(storageAPIProvider);
+  return TweetController(ref: ref, tweetAPI: tweetAPI, storageAPI: storageAPI);
+});
+final getTweetsProvider=FutureProvider((ref) {
+  final tweetController=ref.watch(tweetControllerProvider.notifier);
+  return tweetController.getTweets();
+});
 
-  TweetController({required Ref ref})
+class TweetController extends StateNotifier<bool> {
+  final TweetAPI _tweetAPI;
+  final Ref _ref;
+  final StorageAPI _storageAPI;
+
+  TweetController(
+      {required Ref ref,
+      required TweetAPI tweetAPI,
+      required StorageAPI storageAPI})
       : _ref = ref,
+        _tweetAPI = tweetAPI,
+        _storageAPI = storageAPI,
         super(false);
 
   void shareTweet({
@@ -41,12 +61,35 @@ class TweetController extends StateNotifier<bool> {
     required List<File> images,
     required String text,
     required BuildContext context,
-  }) {}
+  }) async {
+    state = true;
+    final hashtags = _getHashtagsFromText(text);
+    final link = _getLinkFromText(text);
+    final user = _ref.read(currentUserDetailsProvider).value!;
+    final imageLinks = await _storageAPI.uploadImage(images);
+    TweetModel tweet = TweetModel(
+      text: text,
+      hashtags: hashtags,
+      link: link,
+      imageLinks:imageLinks,
+      uid: user.uid,
+      tweetType: TweetType.image,
+      tweetedAt: DateTime.now(),
+      likes: [],
+      commentIds: [],
+      id: '',
+      reshareCount: 0,
+    );
+    final res = await _tweetAPI.shareTweet(tweet);
+    state = false;
+    res.fold((l) => showSnackBar(context, l.message), (r) => null);
+  }
 
   void _shareTextTweet({
     required String text,
     required BuildContext context,
-  }) {
+  }) async {
+    state = true;
     final hashtags = _getHashtagsFromText(text);
     String link = _getLinkFromText(text);
     final user = _ref.read(currentUserDetailsProvider).value!;
@@ -63,6 +106,11 @@ class TweetController extends StateNotifier<bool> {
       id: '',
       reshareCount: 0,
     );
+    final res = await _tweetAPI.shareTweet(tweet);
+    state = false;
+    res.fold((l) {
+      return showSnackBar(context, l.message);
+    }, (r) => null);
   }
 
   String _getLinkFromText(String text) {
@@ -85,5 +133,9 @@ class TweetController extends StateNotifier<bool> {
       }
     }
     return hashtags;
+  }
+  Future<List<TweetModel>>getTweets()async{
+    final tweetList=await _tweetAPI.getTweets();
+    return tweetList.map((tweet) => TweetModel.fromMap(tweet.data),).toList();
   }
 }
