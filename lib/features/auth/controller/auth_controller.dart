@@ -24,17 +24,16 @@ final currentUserAccountProvider = FutureProvider((ref) {
 });
 final currentUserDetailsProvider = FutureProvider((ref) {
   final currentUserId = ref.watch(currentUserAccountProvider).value!.$id;
-  // print('id is $currentUserId');
+  print('id is $currentUserId');
   final userDetails = ref.watch(
     userDetailsProvider(currentUserId),
   );
-  // print('userDetails is ${userDetails.value}');
+  print('userDetails is ${userDetails.value}');
   return userDetails.value;
 });
 
 final userDetailsProvider = FutureProvider.family((ref, String uid) {
   final authController = ref.watch(authControllerProvider.notifier);
-  // print('AuthController.getUserData${authController.getUserData(uid)}');
   return authController.getUserData(uid);
 });
 

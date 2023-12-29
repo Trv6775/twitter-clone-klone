@@ -15,8 +15,8 @@ final tweetControllerProvider =
   final storageAPI = ref.watch(storageAPIProvider);
   return TweetController(ref: ref, tweetAPI: tweetAPI, storageAPI: storageAPI);
 });
-final getTweetsProvider=FutureProvider((ref) {
-  final tweetController=ref.watch(tweetControllerProvider.notifier);
+final getTweetsProvider = FutureProvider((ref) {
+  final tweetController = ref.watch(tweetControllerProvider.notifier);
   return tweetController.getTweets();
 });
 
@@ -71,7 +71,7 @@ class TweetController extends StateNotifier<bool> {
       text: text,
       hashtags: hashtags,
       link: link,
-      imageLinks:imageLinks,
+      imageLinks: imageLinks,
       uid: user.uid,
       tweetType: TweetType.image,
       tweetedAt: DateTime.now(),
@@ -134,8 +134,13 @@ class TweetController extends StateNotifier<bool> {
     }
     return hashtags;
   }
-  Future<List<TweetModel>>getTweets()async{
-    final tweetList=await _tweetAPI.getTweets();
-    return tweetList.map((tweet) => TweetModel.fromMap(tweet.data),).toList();
+
+  Future<List<TweetModel>> getTweets() async {
+    final tweetList = await _tweetAPI.getTweets();
+    return tweetList
+        .map(
+          (tweet) => TweetModel.fromMap(tweet.data),
+        )
+        .toList();
   }
 }
