@@ -7,6 +7,7 @@ import 'package:twitter_klone_clone/apis/apis..dart';
 import 'package:twitter_klone_clone/core/core.dart';
 import 'package:twitter_klone_clone/core/enums/enums.dart';
 import 'package:twitter_klone_clone/features/auth/controller/auth_controller.dart';
+import 'package:twitter_klone_clone/models/models.dart';
 import 'package:twitter_klone_clone/models/tweet_model.dart';
 
 final tweetControllerProvider =
@@ -18,6 +19,10 @@ final tweetControllerProvider =
 final getTweetsProvider = FutureProvider((ref) {
   final tweetController = ref.watch(tweetControllerProvider.notifier);
   return tweetController.getTweets();
+});
+final getLatestTweetProvider = StreamProvider((ref) {
+  final tweetAPI = ref.watch(tweetAPIProvider);
+  return tweetAPI.getLatestTweet();
 });
 
 class TweetController extends StateNotifier<bool> {
@@ -142,5 +147,17 @@ class TweetController extends StateNotifier<bool> {
           (tweet) => TweetModel.fromMap(tweet.data),
         )
         .toList();
+  }
+
+  void likeTweet(TweetModel tweet, UserModel user) async {
+    List<String> likes = tweet.likes;
+    if (tweet.likes.contains(user.uid)) {
+      likes.remove(user.uid);
+    } else {
+      likes.add(user.uid);
+    }
+    tweet = tweet.copyWith(likes: likes);
+    final res = await _tweetAPI.likeTweet(tweet);
+    res.fold((l) => null, (r) => null);
   }
 }
