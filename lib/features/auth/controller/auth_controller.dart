@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:twitter_klone_clone/apis/apis..dart';
 
 import 'package:twitter_klone_clone/core/core.dart';
-import 'package:twitter_klone_clone/features/auth/view/login_view.dart';
+import 'package:twitter_klone_clone/features/auth/views/login_view.dart';
 import 'package:twitter_klone_clone/features/home/views/home_view.dart';
 import 'package:appwrite/models.dart' as model;
 import 'package:twitter_klone_clone/models/user_model.dart';

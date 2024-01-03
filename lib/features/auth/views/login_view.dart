@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:twitter_klone_clone/common/common.dart';
 import 'package:twitter_klone_clone/constants/constants.dart';
 import 'package:twitter_klone_clone/features/auth/controller/auth_controller.dart';
-import 'package:twitter_klone_clone/features/auth/view/sign_up_view.dart';
+import 'package:twitter_klone_clone/features/auth/views/sign_up_view.dart';
 import 'package:twitter_klone_clone/features/auth/widgets/auth_field.dart';
 import 'package:twitter_klone_clone/theme/pallete.dart';
 
