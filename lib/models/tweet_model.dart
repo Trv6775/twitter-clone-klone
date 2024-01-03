@@ -14,6 +14,8 @@ class TweetModel {
   final List<String> commentIds;
   final String id;
   final int reshareCount;
+  final String retweetedBy;
+  final String repliedTo;
 
   const TweetModel({
     required this.text,
@@ -27,6 +29,8 @@ class TweetModel {
     required this.commentIds,
     required this.id,
     required this.reshareCount,
+    required this.retweetedBy,
+    required this.repliedTo,
   });
 
   TweetModel copyWith({
@@ -41,6 +45,8 @@ class TweetModel {
     List<String>? commentIds,
     String? id,
     int? reshareCount,
+    String? retweetedBy,
+    String? repliedTo,
   }) {
     return TweetModel(
       text: text ?? this.text,
@@ -54,6 +60,8 @@ class TweetModel {
       commentIds: commentIds ?? this.commentIds,
       id: id ?? this.id,
       reshareCount: reshareCount ?? this.reshareCount,
+      retweetedBy: retweetedBy ?? this.retweetedBy,
+      repliedTo: repliedTo ?? this.repliedTo,
     );
   }
 
@@ -69,6 +77,8 @@ class TweetModel {
       'likes': likes,
       'commentIds': commentIds,
       'reshareCount': reshareCount,
+      'retweetedBy': retweetedBy,
+      'repliedTo': repliedTo,
     };
   }
 
@@ -79,18 +89,20 @@ class TweetModel {
       link: map['link'] ?? '',
       imageLinks: List<String>.from(map['imageLinks']),
       uid: map['uid'] ?? '',
-      tweetType: (map['tweetType'] as String).toEnum(),
+      tweetType: (map['tweetType'] as String).toTweetTypeEnum(),
       tweetedAt: DateTime.fromMillisecondsSinceEpoch(map['tweetedAt']),
       likes: List<String>.from(map['likes']),
       commentIds: List<String>.from(map['commentIds']),
       id: map['\$id'] ?? '',
       reshareCount: map['reshareCount']?.toInt() ?? int,
+      retweetedBy: map['retweetedBy'] ?? '',
+      repliedTo: map['repliedTo'] ?? '',
     );
   }
 
   @override
   String toString() {
-    return 'TweetModel{text: $text, hashtags: $hashtags, link: $link, imageLinks: $imageLinks, uid: $uid, tweetType: $tweetType, tweetedAt: $tweetedAt, likes: $likes, commentIds: $commentIds, id: $id, reshareCount: $reshareCount}';
+    return 'TweetModel{text: $text, hashtags: $hashtags, link: $link, imageLinks: $imageLinks, uid: $uid, tweetType: $tweetType, tweetedAt: $tweetedAt, likes: $likes, commentIds: $commentIds, id: $id, reshareCount: $reshareCount,retweetedBy: $retweetedBy,repliedTo:$repliedTo}';
   }
 
   @override
@@ -108,7 +120,9 @@ class TweetModel {
           likes == other.likes &&
           commentIds == other.commentIds &&
           id == other.id &&
-          reshareCount == other.reshareCount;
+          reshareCount == other.reshareCount &&
+          retweetedBy == other.retweetedBy&&
+          repliedTo == other.repliedTo;
 
   @override
   int get hashCode =>
@@ -122,5 +136,7 @@ class TweetModel {
       likes.hashCode ^
       commentIds.hashCode ^
       id.hashCode ^
-      reshareCount.hashCode;
+      reshareCount.hashCode ^
+      retweetedBy.hashCode^
+      repliedTo.hashCode;
 }

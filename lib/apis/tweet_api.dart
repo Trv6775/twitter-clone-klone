@@ -23,6 +23,12 @@ abstract class ITweetAPI {
   Stream<RealtimeMessage> getLatestTweet();
 
   FutureEither<model.Document> likeTweet(TweetModel tweet);
+
+  FutureEither<model.Document> updateReshareCount(TweetModel tweet);
+
+  Future<List<model.Document>> getRepliesToTweet(TweetModel tweet);
+
+  Future<model.Document> getTweetById(String id);
 }
 
 class TweetAPI extends ITweetAPI {
@@ -95,5 +101,54 @@ class TweetAPI extends ITweetAPI {
         Failure(e.toString(), stackTrace),
       );
     }
+  }
+
+  @override
+  FutureEither<model.Document> updateReshareCount(TweetModel tweet) async {
+    try {
+      final document = await _db.updateDocument(
+          databaseId: AppwriteConstants.databaseId,
+          collectionId: AppwriteConstants.tweetCollectionId,
+          documentId: tweet.uid,
+          data: {
+            'reshareCount': tweet.reshareCount,
+          });
+      return right(document);
+    } on AppwriteException catch (e, stackTrace) {
+      return left(
+        Failure(
+          e.message ?? 'Some unexpected error occurred',
+          stackTrace,
+        ),
+      );
+    } catch (e, stackTrace) {
+      return left(
+        Failure(e.toString(), stackTrace),
+      );
+    }
+  }
+
+  @override
+  Future<List<model.Document>> getRepliesToTweet(TweetModel tweet) async {
+    final document = await _db.listDocuments(
+      databaseId: AppwriteConstants.databaseId,
+      collectionId: AppwriteConstants.tweetCollectionId,
+      queries: [
+        Query.equal(
+          'repliedTo',
+          tweet.id,
+        ),
+      ],
+    );
+    return document.documents;
+  }
+
+  @override
+  Future<model.Document> getTweetById(String id) async{
+    return await _db.getDocument(
+      databaseId: AppwriteConstants.databaseId,
+      collectionId: AppwriteConstants.tweetCollectionId,
+      documentId: id,
+    );
   }
 }

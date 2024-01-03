@@ -43,7 +43,8 @@ class _CreateTweetViewState extends ConsumerState<CreateTweetView> {
           images: images,
           text: tweetTextController.text,
           context: context,
-        );
+          repliedTo: '',
+         );
     Navigator.pop(context);
   }
 

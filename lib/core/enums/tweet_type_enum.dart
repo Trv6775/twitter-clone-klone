@@ -8,7 +8,7 @@ enum TweetType {
 }
 
 extension ConvertTweet on String {
-  TweetType toEnum() {
+  TweetType toTweetTypeEnum() {
     switch (this) {
       case 'text':
         return TweetType.text;
