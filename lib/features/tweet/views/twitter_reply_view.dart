@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:twitter_klone_clone/common/common.dart';
 import 'package:twitter_klone_clone/constants/constants.dart';
-import 'package:twitter_klone_clone/features/tweet/tweet_controller.dart';
+import 'package:twitter_klone_clone/features/tweet/controller/tweet_controller.dart';
 import 'package:twitter_klone_clone/features/tweet/widgets/tweet_card.dart';
 import 'package:twitter_klone_clone/models/models.dart';
 

@@ -213,4 +213,5 @@ class TweetController extends StateNotifier<bool> {
     final tweet = await _tweetAPI.getTweetById(id);
     return TweetModel.fromMap(tweet.data);
   }
+
 }

@@ -20,6 +20,8 @@ abstract class IUserAPI {
   Future<model.Document> getUserData(String uid);
 
   Future<List<model.Document>> searchUserByName(String name);
+
+  FutureEitherVoid updateUser(UserModel userModel);
 }
 
 class UserAPI implements IUserAPI {
@@ -60,12 +62,32 @@ class UserAPI implements IUserAPI {
   @override
   Future<List<model.Document>> searchUserByName(String name) async {
     final document = await _db.listDocuments(
-      databaseId: AppwriteConstants.databaseId,
-      collectionId: AppwriteConstants.usersCollectionId,
-      queries: [
-        Query.search('name', name),
-      ]
-    );
+        databaseId: AppwriteConstants.databaseId,
+        collectionId: AppwriteConstants.usersCollectionId,
+        queries: [
+          Query.search('name', name),
+        ]);
     return document.documents;
+  }
+
+  @override
+  FutureEitherVoid updateUser(UserModel userModel) async {
+    try {
+      await _db.updateDocument(
+        databaseId: AppwriteConstants.databaseId,
+        collectionId: AppwriteConstants.usersCollectionId,
+        documentId: userModel.uid,
+        data: userModel.toMap(),
+      );
+      return right(null);
+    } on AppwriteException catch (e, stackTrace) {
+      return left(
+        Failure(e.message ?? 'Some unexpected error occured', stackTrace),
+      );
+    } catch (e, stackTrace) {
+      return left(
+        Failure(e.toString(), stackTrace),
+      );
+    }
   }
 }

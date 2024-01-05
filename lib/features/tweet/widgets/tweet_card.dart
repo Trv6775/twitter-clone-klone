@@ -7,7 +7,7 @@ import 'package:twitter_klone_clone/common/common.dart';
 import 'package:twitter_klone_clone/constants/constants.dart';
 import 'package:twitter_klone_clone/core/enums/enums.dart';
 import 'package:twitter_klone_clone/features/auth/controller/auth_controller.dart';
-import 'package:twitter_klone_clone/features/tweet/tweet_controller.dart';
+import 'package:twitter_klone_clone/features/tweet/controller/tweet_controller.dart';
 import 'package:twitter_klone_clone/features/tweet/views/twitter_reply_view.dart';
 import 'package:twitter_klone_clone/features/tweet/widgets/carousel_image.dart';
 import 'package:twitter_klone_clone/features/tweet/widgets/hashtag_text.dart';

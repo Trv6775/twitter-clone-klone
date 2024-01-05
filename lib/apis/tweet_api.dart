@@ -29,6 +29,8 @@ abstract class ITweetAPI {
   Future<List<model.Document>> getRepliesToTweet(TweetModel tweet);
 
   Future<model.Document> getTweetById(String id);
+
+  Future<List<model.Document>>getUserTweets(String uid);
 }
 
 class TweetAPI extends ITweetAPI {
@@ -150,5 +152,13 @@ class TweetAPI extends ITweetAPI {
       collectionId: AppwriteConstants.tweetCollectionId,
       documentId: id,
     );
+  }
+
+  @override
+  Future<List<model.Document>> getUserTweets(String uid) async{
+    final document=await _db.listDocuments(databaseId: AppwriteConstants.databaseId, collectionId: AppwriteConstants.tweetCollectionId,queries: [
+      Query.equal('uid', uid),
+    ]);
+    return document.documents;
   }
 }
