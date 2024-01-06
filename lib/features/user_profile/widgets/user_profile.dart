@@ -53,10 +53,19 @@ class UserProfile extends ConsumerWidget {
                         child: OutlinedButton(
                           onPressed: () {
                             if (currentUser.uid == user.uid) {
+                              //edit profile
                               Navigator.push(
                                 context,
                                 EditProfileView.route(),
                               );
+                            } else {
+                              ref
+                                  .read(userProfileControllerProvider.notifier)
+                                  .followUser(
+                                    user: user,
+                                    context: context,
+                                    currentUser: currentUser,
+                                  );
                             }
                           },
                           style: ElevatedButton.styleFrom(
@@ -73,7 +82,7 @@ class UserProfile extends ConsumerWidget {
                           child: Text(
                             currentUser.uid == user.uid
                                 ? 'Edit profile'
-                                : 'Follow',
+                                : currentUser.following.contains(user.uid)?'Unfollow':'Follow',
                             style: const TextStyle(
                               color: Pallete.whiteColor,
                             ),
@@ -115,15 +124,15 @@ class UserProfile extends ConsumerWidget {
                         Row(
                           children: [
                             FollowCount(
-                              count: user.following.length - 1,
+                              count: user.following.length ,
                               text: 'Following',
                             ),
                             const SizedBox(
                               width: 15,
                             ),
                             FollowCount(
-                              count: user.followers.length - 1,
-                              text: user.followers.length - 1 > 2
+                              count: user.followers.length ,
+                              text: user.followers.length  > 2
                                   ? 'Followers'
                                   : 'Follower',
                             ),

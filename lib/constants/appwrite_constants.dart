@@ -3,6 +3,7 @@ class AppwriteConstants {
   static const String projectId = '6566a1ffcf03bba75417';
   static const String usersCollectionId = '65715b9ff22d5ab3f932';
   static const String tweetCollectionId = '657aaf8ac10a52f1a183';
+  static const String notificationsCollectionId = '6599a535d93befef7d58';
   static const String imagesBucketId = '658155c431fd57b37d10';
   static const String endpoint = 'https://cloud.appwrite.io/v1';
 
