@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:twitter_klone_clone/apis/apis..dart';
 import 'package:twitter_klone_clone/core/core.dart';
+import 'package:twitter_klone_clone/core/enums/enums.dart';
+import 'package:twitter_klone_clone/features/notifications/controller/notifications_controller.dart';
 import 'package:twitter_klone_clone/models/models.dart';
 
 final userProfileControllerProvider =
@@ -11,10 +13,13 @@ final userProfileControllerProvider =
   final tweetAPI = ref.watch(tweetAPIProvider);
   final storageAPI = ref.watch(storageAPIProvider);
   final userAPI = ref.watch(userAPIProvider);
+  final notificationsController =
+      ref.watch(notificationsControllerProvider.notifier);
   return UserProfileController(
     tweetAPI: tweetAPI,
     storageAPI: storageAPI,
     userAPI: userAPI,
+    notificationsController: notificationsController,
   );
 });
 
@@ -32,14 +37,17 @@ class UserProfileController extends StateNotifier<bool> {
   final TweetAPI _tweetAPI;
   final StorageAPI _storageAPI;
   final UserAPI _userAPI;
+  final NotificationsController _notificationsController;
 
-  UserProfileController(
-      {required TweetAPI tweetAPI,
-      required StorageAPI storageAPI,
-      required UserAPI userAPI})
-      : _tweetAPI = tweetAPI,
+  UserProfileController({
+    required TweetAPI tweetAPI,
+    required StorageAPI storageAPI,
+    required UserAPI userAPI,
+    required NotificationsController notificationsController,
+  })  : _tweetAPI = tweetAPI,
         _storageAPI = storageAPI,
         _userAPI = userAPI,
+        _notificationsController = notificationsController,
         super(false);
 
   Future<List<TweetModel>> getUserTweets(String uid) async {
@@ -110,8 +118,14 @@ class UserProfileController extends StateNotifier<bool> {
           (l) => showSnackBar(
                 context,
                 l.message,
-              ),
-          (r) => null);
+              ), (r) {
+        _notificationsController.createNotification(
+          text: '${currentUser.name} followed you!',
+          postId: '',
+          notificationType: NotificationType.follow,
+          uid: user.uid,
+        );
+      });
     });
   }
 }
